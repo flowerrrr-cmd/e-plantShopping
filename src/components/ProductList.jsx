@@ -1,6 +1,10 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { addItem } from "../redux/CartSlice";
 
 export default function ProductList() {
+  const dispatch = useDispatch();
+
   const [cartCount, setCartCount] = useState(0);
   const [added, setAdded] = useState({});
 
@@ -31,37 +35,42 @@ export default function ProductList() {
     ]
   };
 
-  const addToCart = (id) => {
+  const addToCartHandler = (plant) => {
+    dispatch(addItem(plant));   // 🔥 Redux dispatch
     setCartCount(cartCount + 1);
-    setAdded({ ...added, [id]: true });
+    setAdded({ ...added, [plant.id]: true });
   };
 
   return (
     <div>
+      {/* Navbar */}
       <nav>
         <a href="#">Home</a> | 
         <a href="#">Plants</a> | 
         <a href="#">Cart ({cartCount})</a>
       </nav>
 
-      <h1>Plants</h1>
+      <h1>Plant List</h1>
 
-      {Object.keys(plants).map(category => (
+      {Object.keys(plants).map((category) => (
         <div key={category}>
           <h2>{category}</h2>
 
-          {plants[category].map(p => (
-            <div key={p.id}>
-              <img src={p.img} width="100" />
-              <p>{p.name}</p>
-              <p>${p.price}</p>
+          {plants[category].map((plant) => (
+            <div key={plant.id}>
+              <img src={plant.img} width="100" />
 
-              <button 
-                onClick={() => addToCart(p.id)} 
-                disabled={added[p.id]}
+              <h3>{plant.name}</h3>
+              <p>Price: ${plant.price}</p>
+
+              <button
+                onClick={() => addToCartHandler(plant)}
+                disabled={added[plant.id]}
               >
-                {added[p.id] ? "Added" : "Add to Cart"}
+                {added[plant.id] ? "Added" : "Add to Cart"}
               </button>
+
+              <hr />
             </div>
           ))}
         </div>
